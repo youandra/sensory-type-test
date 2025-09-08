@@ -34,8 +34,7 @@
  .hbar{flex:1;height:10px;background:#f0f3f5;border-radius:999px;overflow:hidden}
  .fill{height:100%;background:linear-gradient(90deg,#1c74d8,#00b2a9);width:0%}
  .pct{width:48px;text-align:right;font-variant-numeric:tabular-nums}
- .reason{margin:8px 0 0 0;padding-left:18px}
- .reason li{margin:4px 0}
+ .emoji{font-size:28px;margin-right:6px}
 </style>
 </head>
 <body>
@@ -108,7 +107,8 @@
     ["30","식사 시간이나 메뉴가 달라도 기분은 큰 변화가 없다.","E",true]
   ];
 
-  // 결과 카드 텍스트(‘당신은 …’ 톤)
+  // 감각별 텍스트 + 이모지
+  const EMOJI = { A:"👀", B:"👂", C:"✋", D:"👃", E:"👅" };
   const TEXTS = {
     A:{title:"시각형",
        feature:["당신은 시각 자극에 민감해요.","당신은 정돈된 구조와 차분한 색에서 안정감을 느껴요."],
@@ -137,7 +137,7 @@
   function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
   function newRun(){
-    order = shuffle([...ITEMS]); // 내용은 무작위, 화면 번호는 1→30
+    order = shuffle([...ITEMS]); // 내용 무작위, 화면 번호는 1→30
     idx = 0; answers = {};
     document.getElementById("out").style.display="none";
     render();
@@ -162,8 +162,7 @@
 
     document.getElementById("counter").innerText=(idx+1)+" / "+ITEMS.length;
     document.getElementById("bar").style.width=((idx+1)/ITEMS.length*100)+"%";
-    // 체크박스 제거에 따라 기본적으로 '건너뛰기 허용'
-    document.getElementById("nextBtn").disabled = false;
+    document.getElementById("nextBtn").disabled = false; // 건너뛰기 허용
   }
 
   function calc(){
@@ -199,26 +198,15 @@
         </div>`;
     });
 
-    // 대표 감각 상세(특징/루틴/이유)
+    // 대표 감각 상세(이모지/특징/루틴/설명) — '이유(응답 근거)' 제거
     tops.forEach(t=>{
-      const contrib = ITEMS.filter(it=>it[2]===t).map(it=>{
-        let v = answers[it[0]] ?? 3; if(it[3]) v = 6 - v;
-        return {id:it[0], text: it[1], v};
-      }).sort((a,b)=>b.v-a.v);
-      const topReasons = (contrib.filter(c=>c.v>=4).slice(0,3).length>0)
-        ? contrib.filter(c=>c.v>=4).slice(0,3) : contrib.slice(0,3);
-
       html += `
         <div class="result-card">
           <div>
-            <h3 style="margin:0 0 6px">${TEXTS[t].title}</h3>
+            <h3 style="margin:0 0 6px"><span class="emoji" aria-hidden="true">${EMOJI[t]}</span>${TEXTS[t].title}</h3>
             <p><b>특징:</b> ${TEXTS[t].feature.join(" · ")}</p>
             <p><b>회복 루틴:</b></p>
             <ul style="margin:6px 0 10px 18px"><li>${TEXTS[t].routine.join("</li><li>")}</li></ul>
-            <p style="margin:8px 0 4px"><b>이유(응답 근거):</b></p>
-            <ul class="reason">
-              ${topReasons.map(r=>`<li>${r.text} <span class="small">(응답 점수: ${r.v})</span></li>`).join("")}
-            </ul>
             <p class="small" style="margin-top:8px;color:#666">${TEXTS[t].desc}</p>
           </div>
         </div>`;
@@ -243,13 +231,13 @@
     URL.revokeObjectURL(a.href);
   }
 
-  // 이벤트
+  // 네비/액션
   document.getElementById("nextBtn").onclick=()=>{ if(idx<order.length-1){idx++;render();}else{show();} };
   document.getElementById("prevBtn").onclick=()=>{ if(idx>0){idx--;render();} };
   document.getElementById("restart").onclick=()=>{ if(confirm("진행 중인 응답을 초기화하고 처음부터 다시 시작할까요?")) newRun(); };
   document.getElementById("exportBtn").onclick=exportCSV;
 
-  // 소리 아이콘 클릭 시 읽어주기
+  // 소리 아이콘(🔊)으로 읽어주기
   document.getElementById("ttsBtn").addEventListener("click", ()=>{
     try{
       const it = order[idx];
@@ -266,4 +254,3 @@
 </script>
 </body>
 </html>
-

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오감 감각 유형 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #f8f9fa;
+            padding: 40px;
+            text-align: center;
+            color: #2d3748;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .test-section {
+            padding: 40px;
+        }
+
+        #questionContainer {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .question-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #e2e8f0;
+        }
+
+        .question-item:hover {
+            background: #f8f9ff;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+            border-left-color: #667eea;
+        }
+
+        .question-item input[type="checkbox"] {
+            margin-right: 15px;
+            margin-top: 3px;
+            width: 20px;
+            height: 20px;
+            accent-color: #667eea;
+            cursor: pointer;
+        }
+
+        .question-item label {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #4a5568;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .result-button {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result-page {
+            display: none;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .result-title {
+            font-size: 2.5em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .result-types {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .result-type {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid;
+        }
+
+        .type-visual { border-left-color: #ff6b6b; background: #fffbf0; }
+        .type-audio { border-left-color: #4ecdc4; background: #fffbf0; }
+        .type-touch { border-left-color: #45b7d1; background: #fffbf0; }
+        .type-smell { border-left-color: #96ceb4; background: #fffbf0; }
+        .type-taste { border-left-color: #ffeaa7; background: #fffbf0; }
+
+        .type-name {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+
+        .type-description {
+            font-size: 1.1em;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            margin-top: 20px;
+        }
+
+        .emoji {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .test-section {
+                padding: 30px 20px;
+            }
+            
+            .question-item {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 오감 감각 유형 테스트</h1>
+            <p>나만의 감각 특성을 알아보세요</p>
+        </div>
+
+        <div id="testPage" class="test-section">
+            <div id="questionContainer">
+                <!-- 문항들이 여기에 동적으로 생성됩니다 -->
+            </div>
+
+            <div class="result-button">
+                <button class="btn" id="resultBtn" disabled>문항을 선택해주세요</button>
+            </div>
+        </div>
+
+        <div id="resultPage" class="result-page">
+            <h2 class="result-title">✨ 당신의 감각 유형 ✨</h2>
+            <div id="resultContent" class="result-types"></div>
+            <button class="btn restart-btn" id="restartBtn">🔄 다시 테스트하기</button>
+        </div>
+    </div>
+
+    <script>
+        // 모든 문항들을 배열로 정의
+        const allQuestions = [
+            { type: 'visual', text: '눈에 보이는 공간이 어지럽거나 지저분하면 스트레스를 받는다.' },
+            { type: 'visual', text: '주변 조명이 어두우면 기분도 가라앉는 느낌이 든다.' },
+            { type: 'visual', text: '분위기나 인테리어가 정돈된 곳에 있으면 마음이 편안해진다.' },
+            { type: 'auditory', text: '반복적인 소음에 쉽게 예민해진다.' },
+            { type: 'auditory', text: '사람 말 소리에 억양이나 어투에 민감하게 반응한다.' },
+            { type: 'auditory', text: '음악이 감정에 큰 영향을 준다.' },
+            { type: 'tactile', text: '까슬하거나 딱딱한 옷은 불편해서 잘 못입는다.' },
+            { type: 'tactile', text: '껴안기, 쓰다듬기 같은 접촉이 불편할 때가 있다.' },
+            { type: 'tactile', text: '감정이 힘들면 몸이 먼저 굳거나 긴장된다.' },
+            { type: 'olfactory', text: '특정 향기를 맡으면 기분이 좋아지거나 불편해진다.' },
+            { type: 'olfactory', text: '냄새에 민감해서 향수냄새 혹은 음식냄새를 오래 기억한다.' },
+            { type: 'olfactory', text: '계절 냄새(봄 냄새, 비 냄새 등)에 유난히 민감하다.' },
+            { type: 'gustatory', text: '맛있는 음식을 먹으면 기분이 쉽게 풀린다.' },
+            { type: 'gustatory', text: '달콤하거나 짭짤한 간식을 먹고 나면 감정이 바뀌는 걸 느낀다.' },
+            { type: 'gustatory', text: '입맛이 없으면 하루가 쉽게 다운된다.' }
+        ];
+
+        const sensoryTypes = {
+            visual: {
+                name: '👁️ 시각형 (Visual Type)',
+                description: '시각적 자극에 민감하고 깔끔하고 정돈된 환경을 선호합니다. 조명과 색상, 공간 배치가 당신의 감정과 컨디션에 큰 영향을 미치는 타입입니다.',
+                class: 'type-visual'
+            },
+            auditory: {
+                name: '👂 청각형 (Auditory Type)',
+                description: '소리와 음성에 특별히 민감한 타입입니다. 음악, 목소리의 톤, 주변 소음이 당신의 감정 상태를 크게 좌우합니다.',
+                class: 'type-audio'
+            },
+            tactile: {
+                name: '✋ 촉각형 (Tactile Type)',
+                description: '촉감과 신체적 접촉에 민감한 타입입니다. 옷의 재질, 온도, 물리적 접촉이 당신의 편안함과 감정에 직접적인 영향을 줍니다.',
+                class: 'type-touch'
+            },
+            olfactory: {
+                name: '👃 후각형 (Olfactory Type)',
+                description: '냄새와 향기에 특별한 반응을 보이는 타입입니다. 향수, 음식 냄새, 자연의 향기가 당신의 기억과 감정을 강하게 자극합니다.',
+                class: 'type-smell'
+            },
+            gustatory: {
+                name: '👅 미각형 (Gustatory Type)',
+                description: '맛과 음식을 통해 감정을 조절하는 타입입니다. 음식의 맛이 당신의 기분과 하루의 컨디션에 큰 영향을 미칩니다.',
+                class: 'type-taste'
+            }
+        };
+
+        // 배열을 랜덤하게 섞는 함수
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // 문항들을 랜덤으로 배치하는 함수
+        function initializeQuestions() {
+            const container = document.getElementById('questionContainer');
+            const shuffledQuestions = shuffleArray(allQuestions);
+            
+            // 기존 내용 제거
+            container.innerHTML = '';
+            
+            // 새로운 문항들 추가
+            shuffledQuestions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-item';
+                
+                questionDiv.innerHTML = `
+                    <input type="checkbox" id="q${index}" name="${question.type}">
+                    <label for="q${index}">${question.text}</label>
+                `;
+                
+                container.appendChild(questionDiv);
+            });
+        }
+
+        // 결과 계산 및 표시
+        function showResult() {
+            const results = [];
+            
+            // 각 감각 유형별 체크된 항목 수 계산
+            const counts = {
+                visual: document.querySelectorAll('input[name="visual"]:checked').length,
+                auditory: document.querySelectorAll('input[name="auditory"]:checked').length,
+                tactile: document.querySelectorAll('input[name="tactile"]:checked').length,
+                olfactory: document.querySelectorAll('input[name="olfactory"]:checked').length,
+                gustatory: document.querySelectorAll('input[name="gustatory"]:checked').length
+            };
+            
+            // 2개 이상 체크된 유형들을 결과에 추가
+            Object.keys(counts).forEach(type => {
+                if (counts[type] >= 2) {
+                    results.push(type);
+                }
+            });
+            
+            displayResults(results);
+        }
+
+        function displayResults(results) {
+            const resultContent = document.getElementById('resultContent');
+            
+            if (results.length === 0) {
+                resultContent.innerHTML = `
+                    <div class="result-type" style="border-left-color: #999; background: #fffbf0;">
+                        <div class="emoji">🤔</div>
+                        <div class="type-name">특별한 감각 유형이 발견되지 않았습니다</div>
+                        <div class="type-description">
+                            각 감각에 대한 민감도가 고르게 분포되어 있거나, 
+                            아직 자신의 감각 특성을 명확히 인식하지 못하고 계실 수 있습니다. 
+                            일상생활에서 어떤 감각적 자극에 더 민감하게 반응하는지 관찰해보세요.
+                        </div>
+                    </div>
+                `;
+            } else {
+                let resultHTML = '';
+                results.forEach(type => {
+                    const typeInfo = sensoryTypes[type];
+                    resultHTML += `
+                        <div class="result-type ${typeInfo.class}">
+                            <div class="type-name">${typeInfo.name}</div>
+                            <div class="type-description">${typeInfo.description}</div>
+                        </div>
+                    `;
+                });
+                resultContent.innerHTML = resultHTML;
+            }
+            
+            // 페이지 전환
+            document.getElementById('testPage').style.display = 'none';
+            document.getElementById('resultPage').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function restartTest() {
+            // 페이지 전환
+            document.getElementById('resultPage').style.display = 'none';
+            document.getElementById('testPage').style.display = 'block';
+            
+            // 문항들 다시 섞어서 생성
+            initializeQuestions();
+            
+            // 버튼 초기화
+            updateResultButton();
+            
+            window.scrollTo(0, 0);
+        }
+
+        // 결과 버튼 상태 업데이트
+        function updateResultButton() {
+            const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const btn = document.getElementById('resultBtn');
+            
+            if (checkedCount > 0) {
+                btn.disabled = false;
+                btn.textContent = '🔍 결과 보기';
+            } else {
+                btn.disabled = true;
+                btn.textContent = '문항을 선택해주세요';
+            }
+        }
+
+        // 이벤트 리스너 설정
+        function setupEventListeners() {
+            // 체크박스 변경 이벤트 (이벤트 위임 사용)
+            document.getElementById('questionContainer').addEventListener('change', updateResultButton);
+            
+            // 결과 보기 버튼
+            document.getElementById('resultBtn').addEventListener('click', showResult);
+            
+            // 다시 테스트하기 버튼
+            document.getElementById('restartBtn').addEventListener('click', restartTest);
+        }
+
+        // 페이지 로드 완료 후 초기화
+        window.addEventListener('DOMContentLoaded', function() {
+            initializeQuestions();
+            setupEventListeners();
+        });
+    </script>
+</body>
+</html>

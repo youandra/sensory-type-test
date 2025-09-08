@@ -4,416 +4,165 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>You&Ra 오감 감정 민감성 테스트</title>
-<meta name="description" content="오감 기반 감정 민감성 30문항 검사 (Likert 5점 척도). 영역별 점수 계산 및 대표 감각 산출, CSV 내보내기 지원.">
 <style>
-  :root{ --bg:#faf7f2; --card:#ffffff; --ink:#1f2421; --muted:#6b6b6b; --brand:#3d8b6d; --brand-weak:#e7f3ee; --line:#ececec; }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,Malgun Gothic,sans-serif;}
-  .wrap{max-width:980px;margin:36px auto;padding:0 16px}
-  header.card{padding:22px 20px}
-  .card{background:var(--card);border-radius:16px;box-shadow:0 10px 28px rgba(0,0,0,.06);padding:18px 16px;margin-bottom:16px}
-  h1{font-size:28px;margin:6px 0}
-  p.lead{color:var(--muted);margin:4px 0 0 0}
-  .scale-grid{display:grid;grid-template-columns:1fr repeat(5,64px);gap:8px;align-items:center}
-  .hdr{font-size:12px;color:var(--muted);text-align:center}
-  .q{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
-  .lbl{padding:8px 4px}
-  .group-title{font-weight:700;margin:6px 0 12px;color:#1f3b31;display:flex;align-items:center;gap:8px}
-  .badge{display:inline-block;background:var(--brand-weak);color:var(--brand);border:1px solid var(--brand);padding:2px 8px;border-radius:999px;font-size:12px}
-  .actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
-  button{background:var(--brand);color:#fff;border:none;border-radius:10px;padding:12px 16px;font-weight:700;cursor:pointer}
-  button.secondary{background:#eaeaea;color:#1f1f1f}
-  .result{background:var(--card);border-left:6px solid var(--brand);padding:14px;border-radius:10px;margin-top:8px}
-  .scores{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px}
-  .scores .box{background:#f7f7f7;border-radius:10px;padding:10px;text-align:center}
-  .desc{font-size:14px;color:var(--muted);margin-top:6px}
-  .small{font-size:12px;color:var(--muted)}
-  footer{color:#9a9a9a;font-size:12px;margin:24px 0 40px;text-align:center}
-  @media (max-width:680px){.scale-grid{grid-template-columns:1fr repeat(5,48px)}}
-  input[type="radio"]{width:20px;height:20px}
-  .sticky-actions{position:sticky;bottom:0;z-index:2}
+ :root{--bg:#faf7f2;--card:#ffffff;--ink:#1f2421;--muted:#6b6b6b;--brand:#1c4e80;--line:#ececec}
+ *{box-sizing:border-box}
+ body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+ .wrap{max-width:900px;margin:28px auto;padding:0 16px}
+ .card{background:var(--card);border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,.06);padding:18px 16px;margin-bottom:16px}
+ header.card{display:flex;gap:16px;align-items:center}
+ header img{height:70px}
+ h1{margin:0 0 4px}
+ .muted{color:var(--muted)}
+ .q-area{min-height:120px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:18px;padding:10px}
+ .likert{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+ .likert button{border:1px solid #cfd8e3;background:#f6f8fb;border-radius:10px;padding:10px 12px;cursor:pointer;font-weight:700;min-width:64px}
+ .likert button.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+ .nav{display:flex;gap:8px;margin-top:12px}
+ .nav button{flex:1;border:none;background:var(--brand);color:#fff;border-radius:10px;padding:12px;font-weight:700;cursor:pointer}
+ .nav button.secondary{background:#eaeaea;color:#1f1f1f}
+ .progress{height:8px;background:#f0f3f5;border-radius:999px;overflow:hidden;margin-top:8px}
+ .bar{height:8px;background:linear-gradient(90deg,#1c74d8,#00b2a9);width:0%}
+ .result{background:var(--card);border-left:6px solid var(--brand);padding:14px;border-radius:10px;margin-top:12px}
+ .result-card{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-top:12px}
+ .result-card img{width:110px;height:110px;object-fit:cover;border-radius:12px}
+ .small{font-size:12px;color:var(--muted)}
+ footer{color:#9a9a9a;font-size:12px;margin:24px 0 40px;text-align:center}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="card">
-    <h1>🌿 오감 감정 민감성 테스트 (30문항)</h1>
-    <p class="lead">Likert 5점 척도 — 1: 전혀 그렇지 않다 · 5: 매우 그렇다</p>
-    <p class="small">역채점 문항: A6, B6, C6, D6, E6</p>
+    <img src="logo_youandra.jpg" alt="You&Ra Center">
+    <div>
+      <h1>오감 감정 민감성 테스트</h1>
+      <div class="muted">총 30문항 · Likert 5점 (1 전혀 아님 ~ 5 매우 그럼).<br>문항은 <b>랜덤</b>으로 한 문항씩 제시됩니다.</div>
+      <div class="small">© You&Ra • 감정은 흘려보내야 건강해집니다</div>
+    </div>
   </header>
 
-  <form id="form" autocomplete="off">
-    <!-- 공통 척도 헤더 -->
-    <div class="card scale-grid" aria-hidden="true">
-      <div></div>
-      <div class="hdr">1<br>전혀 아님</div>
-      <div class="hdr">2</div>
-      <div class="hdr">3</div>
-      <div class="hdr">4</div>
-      <div class="hdr">5<br>매우 그럼</div>
+  <div id="exam" class="card">
+    <div class="q-area" id="qText">로딩 중…</div>
+    <div class="likert" id="likert"></div>
+    <div class="nav">
+      <button id="prevBtn" class="secondary">이전</button>
+      <button id="nextBtn">다음</button>
     </div>
-
-    <!-- A: 시각 -->
-    <section class="card" aria-labelledby="gA">
-      <div id="gA" class="group-title">👁️ 시각(A) <span class="badge">Visual</span></div>
-      <div class="q scale-grid">
-        <div class="lbl">A1. 주변이 어수선하면, 정리하기 전까지 다른 일에 집중하기 어렵다.</div>
-        <label><input type="radio" name="A1" value="1" required></label>
-        <label><input type="radio" name="A1" value="2"></label>
-        <label><input type="radio" name="A1" value="3"></label>
-        <label><input type="radio" name="A1" value="4"></label>
-        <label><input type="radio" name="A1" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">A2. 낮은 색 대비의 문서/화면을 오래 읽으면 눈이 쉽게 피로해진다.</div>
-        <label><input type="radio" name="A2" value="1" required></label>
-        <label><input type="radio" name="A2" value="2"></label>
-        <label><input type="radio" name="A2" value="3"></label>
-        <label><input type="radio" name="A2" value="4"></label>
-        <label><input type="radio" name="A2" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">A3. 실내 조명 밝기가 바뀌면, 몸이 그 밝기에 적응하는 데 시간이 걸린다.</div>
-        <label><input type="radio" name="A3" value="1" required></label>
-        <label><input type="radio" name="A3" value="2"></label>
-        <label><input type="radio" name="A3" value="3"></label>
-        <label><input type="radio" name="A3" value="4"></label>
-        <label><input type="radio" name="A3" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">A4. 공간의 색채가 달라지면, 내 업무 속도나 오류율도 달라지는 편이다.</div>
-        <label><input type="radio" name="A4" value="1" required></label>
-        <label><input type="radio" name="A4" value="2"></label>
-        <label><input type="radio" name="A4" value="3"></label>
-        <label><input type="radio" name="A4" value="4"></label>
-        <label><input type="radio" name="A4" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">A5. 일정 시간 이상 강한 빛에 노출되면 이후 한동안 멍하거나 두통이 온다.</div>
-        <label><input type="radio" name="A5" value="1" required></label>
-        <label><input type="radio" name="A5" value="2"></label>
-        <label><input type="radio" name="A5" value="3"></label>
-        <label><input type="radio" name="A5" value="4"></label>
-        <label><input type="radio" name="A5" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">A6. 주변 정리가 안 되어도, 해야 할 일만 있으면 시각적 방해를 거의 무시한다.</div>
-        <label><input type="radio" name="A6" value="1" required></label>
-        <label><input type="radio" name="A6" value="2"></label>
-        <label><input type="radio" name="A6" value="3"></label>
-        <label><input type="radio" name="A6" value="4"></label>
-        <label><input type="radio" name="A6" value="5"></label>
-      </div>
-    </section>
-
-    <!-- B: 청각 -->
-    <section class="card" aria-labelledby="gB">
-      <div id="gB" class="group-title">👂 청각(B) <span class="badge">Auditory</span></div>
-      <div class="q scale-grid">
-        <div class="lbl">B1. 두 가지 이상의 말소리/소리가 겹치면 대화 내용을 놓치는 일이 잦다.</div>
-        <label><input type="radio" name="B1" value="1" required></label>
-        <label><input type="radio" name="B1" value="2"></label>
-        <label><input type="radio" name="B1" value="3"></label>
-        <label><input type="radio" name="B1" value="4"></label>
-        <label><input type="radio" name="B1" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">B2. 소음 환경에서 집중도가 떨어진다.</div>
-        <label><input type="radio" name="B2" value="1" required></label>
-        <label><input type="radio" name="B2" value="2"></label>
-        <label><input type="radio" name="B2" value="3"></label>
-        <label><input type="radio" name="B2" value="4"></label>
-        <label><input type="radio" name="B2" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">B3. 일정 리듬(에어컨, 탁탁 소리 등)이 지속되면 신체가 긴장되는 느낌이 든다.</div>
-        <label><input type="radio" name="B3" value="1" required></label>
-        <label><input type="radio" name="B3" value="2"></label>
-        <label><input type="radio" name="B3" value="3"></label>
-        <label><input type="radio" name="B3" value="4"></label>
-        <label><input type="radio" name="B3" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">B4. 조용한 공간으로 이동하면, 감정 상태가 정상화되기까지 회복 시간이 필요하다.</div>
-        <label><input type="radio" name="B4" value="1" required></label>
-        <label><input type="radio" name="B4" value="2"></label>
-        <label><input type="radio" name="B4" value="3"></label>
-        <label><input type="radio" name="B4" value="4"></label>
-        <label><input type="radio" name="B4" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">B5. 특정 억양(명령조/날카로운 톤 등)이면, 내용보다 톤 자체에 먼저 반응한다.</div>
-        <label><input type="radio" name="B5" value="1" required></label>
-        <label><input type="radio" name="B5" value="2"></label>
-        <label><input type="radio" name="B5" value="3"></label>
-        <label><input type="radio" name="B5" value="4"></label>
-        <label><input type="radio" name="B5" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">B6. 작업 몰입 중에는 주변 소음이 커져도 방해를 거의 받지 않는다.</div>
-        <label><input type="radio" name="B6" value="1" required></label>
-        <label><input type="radio" name="B6" value="2"></label>
-        <label><input type="radio" name="B6" value="3"></label>
-        <label><input type="radio" name="B6" value="4"></label>
-        <label><input type="radio" name="B6" value="5"></label>
-      </div>
-    </section>
-
-    <!-- C: 촉각 -->
-    <section class="card" aria-labelledby="gC">
-      <div id="gC" class="group-title">✋ 촉각(C) <span class="badge">Tactile</span></div>
-      <div class="q scale-grid">
-        <div class="lbl">C1. 피부에 닿는 라벨/솔기/시계줄 같은 미세한 압박이 신경 쓰여 장시간 착용이 어렵다.</div>
-        <label><input type="radio" name="C1" value="1" required></label>
-        <label><input type="radio" name="C1" value="2"></label>
-        <label><input type="radio" name="C1" value="3"></label>
-        <label><input type="radio" name="C1" value="4"></label>
-        <label><input type="radio" name="C1" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">C2. 온도·습도 변화가 크면 감정이 먼저 요동치고 이후에 이유를 찾는 편이다.</div>
-        <label><input type="radio" name="C2" value="1" required></label>
-        <label><input type="radio" name="C2" value="2"></label>
-        <label><input type="radio" name="C2" value="3"></label>
-        <label><input type="radio" name="C2" value="4"></label>
-        <label><input type="radio" name="C2" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">C3. 낯선 사람이 손/어깨를 툭 치면, 상대 의도 파악보다 몸 반응이 먼저 일어난다.</div>
-        <label><input type="radio" name="C3" value="1" required></label>
-        <label><input type="radio" name="C3" value="2"></label>
-        <label><input type="radio" name="C3" value="3"></label>
-        <label><input type="radio" name="C3" value="4"></label>
-        <label><input type="radio" name="C3" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">C4. 긴장 시 어깨·턱·복부 등 특정 부위에 일관된 근긴장이 나타난다.</div>
-        <label><input type="radio" name="C4" value="1" required></label>
-        <label><input type="radio" name="C4" value="2"></label>
-        <label><input type="radio" name="C4" value="3"></label>
-        <label><input type="radio" name="C4" value="4"></label>
-        <label><input type="radio" name="C4" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">C5. 부드러운 재질(담요, 나무결, 물 등)을 짧게 만지는 것만으로도 이완 전환이 된다.</div>
-        <label><input type="radio" name="C5" value="1" required></label>
-        <label><input type="radio" name="C5" value="2"></label>
-        <label><input type="radio" name="C5" value="3"></label>
-        <label><input type="radio" name="C5" value="4"></label>
-        <label><input type="radio" name="C5" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">C6. 옷감/침구 재질은 거의 신경 쓰지 않으며, 불편을 잘 인식하지 못한다.</div>
-        <label><input type="radio" name="C6" value="1" required></label>
-        <label><input type="radio" name="C6" value="2"></label>
-        <label><input type="radio" name="C6" value="3"></label>
-        <label><input type="radio" name="C6" value="4"></label>
-        <label><input type="radio" name="C6" value="5"></label>
-      </div>
-    </section>
-
-    <!-- D: 후각 -->
-    <section class="card" aria-labelledby="gD">
-      <div id="gD" class="group-title">👃 후각(D) <span class="badge">Olfactory</span></div>
-      <div class="q scale-grid">
-        <div class="lbl">D1. 향이나 냄새 변화를 가장 먼저 알아차리는 편이다(사람보다 먼저).</div>
-        <label><input type="radio" name="D1" value="1" required></label>
-        <label><input type="radio" name="D1" value="2"></label>
-        <label><input type="radio" name="D1" value="3"></label>
-        <label><input type="radio" name="D1" value="4"></label>
-        <label><input type="radio" name="D1" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">D2. 실내에 새로운 냄새가 생기면, 그 냄새의 출처를 찾을 때까지 집중이 흐트러진다.</div>
-        <label><input type="radio" name="D2" value="1" required></label>
-        <label><input type="radio" name="D2" value="2"></label>
-        <label><input type="radio" name="D2" value="3"></label>
-        <label><input type="radio" name="D2" value="4"></label>
-        <label><input type="radio" name="D2" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">D3. 냄새가 사라진 뒤에도 감정 여진(불쾌/흥분)이 비교적 오래 남는다.</div>
-        <label><input type="radio" name="D3" value="1" required></label>
-        <label><input type="radio" name="D3" value="2"></label>
-        <label><input type="radio" name="D3" value="3"></label>
-        <label><input type="radio" name="D3" value="4"></label>
-        <label><input type="radio" name="D3" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">D4. 익숙한 냄새가 나면 현재 상황이 달라도 신체가 ‘안전’으로 오판할 때가 있다.</div>
-        <label><input type="radio" name="D4" value="1" required></label>
-        <label><input type="radio" name="D4" value="2"></label>
-        <label><input type="radio" name="D4" value="3"></label>
-        <label><input type="radio" name="D4" value="4"></label>
-        <label><input type="radio" name="D4" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">D5. 같은 향이라도 강도/잔향 차이를 예민하게 구분한다(탑/미들/베이스 등).</div>
-        <label><input type="radio" name="D5" value="1" required></label>
-        <label><input type="radio" name="D5" value="2"></label>
-        <label><input type="radio" name="D5" value="3"></label>
-        <label><input type="radio" name="D5" value="4"></label>
-        <label><input type="radio" name="D5" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">D6. 냄새 강도가 커져도 업무 성과나 대화 질에는 거의 변화가 없다.</div>
-        <label><input type="radio" name="D6" value="1" required></label>
-        <label><input type="radio" name="D6" value="2"></label>
-        <label><input type="radio" name="D6" value="3"></label>
-        <label><input type="radio" name="D6" value="4"></label>
-        <label><input type="radio" name="D6" value="5"></label>
-      </div>
-    </section>
-
-    <!-- E: 미각 -->
-    <section class="card" aria-labelledby="gE">
-      <div id="gE" class="group-title">👅 미각(E) <span class="badge">Gustatory</span></div>
-      <div class="q scale-grid">
-        <div class="lbl">E1. 식사 시간/규칙이 흐트러지면 정서 안정성보다 집중력이 먼저 떨어진다.</div>
-        <label><input type="radio" name="E1" value="1" required></label>
-        <label><input type="radio" name="E1" value="2"></label>
-        <label><input type="radio" name="E1" value="3"></label>
-        <label><input type="radio" name="E1" value="4"></label>
-        <label><input type="radio" name="E1" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">E2. 스트레스 상황에서 찾는 음식 패턴이 반복된다(예: 당/카페인/매운맛).</div>
-        <label><input type="radio" name="E2" value="1" required></label>
-        <label><input type="radio" name="E2" value="2"></label>
-        <label><input type="radio" name="E2" value="3"></label>
-        <label><input type="radio" name="E2" value="4"></label>
-        <label><input type="radio" name="E2" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">E3. 식사 직후 감정 기복이 줄어드는 체감 시간이 있다(예: 10~20분).</div>
-        <label><input type="radio" name="E3" value="1" required></label>
-        <label><input type="radio" name="E3" value="2"></label>
-        <label><input type="radio" name="E3" value="3"></label>
-        <label><input type="radio" name="E3" value="4"></label>
-        <label><input type="radio" name="E3" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">E4. 예상과 다른 맛/식감이면, 만족도뿐 아니라 행동 계획(일정/약속)도 수정한다.</div>
-        <label><input type="radio" name="E4" value="1" required></label>
-        <label><input type="radio" name="E4" value="2"></label>
-        <label><input type="radio" name="E4" value="3"></label>
-        <label><input type="radio" name="E4" value="4"></label>
-        <label><input type="radio" name="E4" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">E5. 새로운 맛에 대한 기대가 낮은 날엔 소량만 먹고도 포기를 선택한다.</div>
-        <label><input type="radio" name="E5" value="1" required></label>
-        <label><input type="radio" name="E5" value="2"></label>
-        <label><input type="radio" name="E5" value="3"></label>
-        <label><input type="radio" name="E5" value="4"></label>
-        <label><input type="radio" name="E5" value="5"></label>
-      </div>
-      <div class="q scale-grid">
-        <div class="lbl">E6. 식사 질이나 타이밍이 달라도 하루 에너지나 감정 곡선은 거의 일정하다.</div>
-        <label><input type="radio" name="E6" value="1" required></label>
-        <label><input type="radio" name="E6" value="2"></label>
-        <label><input type="radio" name="E6" value="3"></label>
-        <label><input type="radio" name="E6" value="4"></label>
-        <label><input type="radio" name="E6" value="5"></label>
-      </div>
-    </section>
-
-    <div class="card sticky-actions">
-      <div class="actions">
-        <button type="button" id="calcBtn">결과 보기</button>
-        <button type="button" class="secondary" id="exportBtn">CSV 내보내기</button>
-        <button type="reset" class="secondary">초기화</button>
-        <span class="small" id="warn" aria-live="polite"></span>
-      </div>
-      <div id="out" class="result" style="display:none"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:8px;">
+      <div class="small" id="counter">0 / 30</div>
+      <div class="small">검사 중에는 감각 이름을 숨깁니다.</div>
     </div>
-  </form>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+  </div>
 
-  <footer>© You&Ra • 감정은 흘려보내야 건강해집니다</footer>
+  <div id="out" class="result" style="display:none"></div>
+
+  <div class="card">
+    <button id="restart" class="secondary">처음부터 다시</button>
+    <button id="exportBtn" class="secondary">CSV 내보내기</button>
+  </div>
 </div>
 
 <script>
 (function(){
-  const reverse = new Set(['A6','B6','C6','D6','E6']);
-  const groups = {A:'시각', B:'청각', C:'촉각', D:'후각', E:'미각'};
-  const interpretations = {
-    A:'시각 환경(정돈/조명/색채)에 민감합니다. 배경 정리와 대비·광량 조절이 도움됩니다. ',
-    B:'청각 자극(겹치는 소리/톤)에 민감합니다. 소음 차단과 조용한 공간이 도움됩니다.',
-    C:'촉감·압박·온습도 변화에 민감합니다. 재질 선택과 이완 루틴을 활용하세요.',
-    D:'후각 변화에 민감합니다. 낯선 냄새의 출처 파악과 향 강도 조절이 집중을 돕습니다.',
-    E:'식사 타이밍·맛에 민감합니다. 규칙적 식사와 예측 가능한 메뉴가 안정에 유리합니다.'
+  const ITEMS = [
+    ["1","주변이 어수선하면, 정리하기 전까지 다른 일에 집중하기 어렵다.","A",false],
+    ["2","낮은 색 대비의 문서/화면을 오래 읽으면 눈이 쉽게 피로해진다.","A",false],
+    ["3","실내 조명 밝기가 바뀌면, 몸이 그 밝기에 적응하는 데 시간이 걸린다.","A",false],
+    ["4","공간의 색채가 달라지면, 내 업무 속도나 오류율도 달라지는 편이다.","A",false],
+    ["5","일정 시간 이상 강한 빛에 노출되면 이후 멍하거나 두통이 온다.","A",false],
+    ["6","주변 정리가 안 되어도, 해야 할 일만 있으면 시각적 방해를 무시한다.","A",true],
+    ["7","두 가지 이상의 말소리가 겹치면 대화 내용을 놓치는 일이 잦다.","B",false],
+    ["8","소음 환경에서 집중도가 떨어진다.","B",false],
+    ["9","일정 리듬(에어컨, 탁탁 소리 등)이 지속되면 신체가 긴장된다.","B",false],
+    ["10","조용한 공간으로 이동하면 회복 시간이 필요하다.","B",false],
+    ["11","특정 억양(명령조 등)에 내용보다 톤 자체에 먼저 반응한다.","B",false],
+    ["12","작업 몰입 중에는 주변 소음이 커져도 방해받지 않는다.","B",true],
+    ["13","옷 라벨/시계줄 같은 압박이 신경 쓰여 오래 착용이 어렵다.","C",false],
+    ["14","온도·습도 변화가 크면 감정이 먼저 요동친다.","C",false],
+    ["15","낯선 사람이 손/어깨를 툭 치면 몸 반응이 먼저 일어난다.","C",false],
+    ["16","긴장 시 어깨·턱·복부 등 특정 부위에 근긴장이 나타난다.","C",false],
+    ["17","부드러운 재질을 짧게 만지는 것만으로도 이완된다.","C",false],
+    ["18","옷감/침구 재질은 거의 신경 쓰지 않는다.","C",true],
+    ["19","향이나 냄새 변화를 가장 먼저 알아차린다.","D",false],
+    ["20","새로운 냄새가 나면 출처를 찾을 때까지 집중이 흐트러진다.","D",false],
+    ["21","냄새가 사라진 뒤에도 감정 여진이 오래 남는다.","D",false],
+    ["22","익숙한 냄새가 나면 상황이 달라도 안전하다고 오판한다.","D",false],
+    ["23","같은 향이라도 강도/잔향 차이를 예민하게 구분한다.","D",false],
+    ["24","냄새 강도가 커져도 업무 성과에는 거의 변화가 없다.","D",true],
+    ["25","식사 시간/규칙이 흐트러지면 집중력이 먼저 떨어진다.","E",false],
+    ["26","스트레스 상황에서 특정 음식을 반복적으로 찾는다.","E",false],
+    ["27","식사 직후 감정 기복이 줄어드는 체감 시간이 있다.","E",false],
+    ["28","예상과 다른 맛이면 행동 계획도 수정한다.","E",false],
+    ["29","새로운 맛 기대가 낮으면 소량만 먹고도 포기한다.","E",false],
+    ["30","식사 질이나 타이밍이 달라도 하루 감정 곡선은 일정하다.","E",true],
+  ];
+
+  const IMGS = { A:"A.jpg",B:"B.jpg",C:"C.jpg",D:"D.jpg",E:"E.jpg" };
+  const TEXTS = {
+    A:{title:"시각형",feature:["시각 자극에 민감","정돈된 구조·색에서 안정"],routine:["정리·정돈","무채색 환경","자연광 독서/명상","컬러 만다라"]},
+    B:{title:"청각형",feature:["소리에 민감","소음은 에너지 고갈"],routine:["백색소음","플레이리스트","조용한 시간","확언 말하기"]},
+    C:{title:"촉각형",feature:["촉감·압박감에 민감","부드러운 질감이 안정"],routine:["손 공예","담요·따뜻한 물건","스트레칭+마사지","감정 일기"]},
+    D:{title:"후각형",feature:["향에 감정이 소환됨","냄새는 감정 온도계"],routine:["향초·아로마","향기 노트","자연 향 맡기","창작 활동"]},
+    E:{title:"미각형",feature:["기분에 따라 입맛 변화","맛·온도·질감이 정서에 영향"],routine:["감정 음식 기록","식사=회복 루틴","따뜻한 음료"]},
   };
 
-  function getValue(name){
-    const n = document.querySelector(\`input[name="\${name}"]:checked\`);
-    if(!n) return null;
-    let v = parseInt(n.value,10);
-    if(reverse.has(name)){ v = 6 - v; } // reverse
-    return v;
+  let order=[],idx=0,answers={};
+
+  function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function newRun(){order=shuffle([...ITEMS]);idx=0;answers={};render();}
+
+  function render(){
+    const it=order[idx]; if(!it) return;
+    document.getElementById("qText").innerText = it[0]+"번. "+it[1];
+    const likert=document.getElementById("likert"); likert.innerHTML="";
+    for(let v=1;v<=5;v++){
+      const b=document.createElement("button");
+      b.textContent=v; if(answers[it[0]]==v) b.classList.add("active");
+      b.onclick=()=>{answers[it[0]]=v;render();};
+      likert.appendChild(b);
+    }
+    document.getElementById("counter").innerText=(idx+1)+" / "+ITEMS.length;
+    document.getElementById("bar").style.width=((idx+1)/ITEMS.length*100)+"%";
   }
 
   function calc(){
-    const warn = document.getElementById('warn');
-    warn.textContent = '';
-    const scores = {A:0,B:0,C:0,D:0,E:0};
-    const missing = [];
-    for(const g of Object.keys(scores)){
-      for(let i=1;i<=6;i++){
-        const key = g+String(i);
-        const v = getValue(key);
-        if(v===null) missing.push(key);
-        else scores[g]+=v;
-      }
-    }
-    if(missing.length){
-      warn.textContent = '미응답 문항: ' + missing.join(', ');
-      return null;
+    const scores={A:0,B:0,C:0,D:0,E:0};
+    for(const it of ITEMS){
+      let v=answers[it[0]]||3;
+      if(it[3]) v=6-v;
+      scores[it[2]]+=v;
     }
     return scores;
   }
 
-  function show(scores){
-    const out = document.getElementById('out');
-    const entries = Object.entries(scores);
-    const max = Math.max(...entries.map(([_,v])=>v));
-    const tops = entries.filter(([_,v])=>v===max).map(([k])=>k);
-    const topLabels = tops.map(t=>\`\${groups[t]}(\${t})\`).join(', ');
-    const detail = entries.map(([k,v])=>\`<div class="box"><strong>\${groups[k]}(\${k})</strong><div>\${v} / 30</div></div>\`).join('');
-    const interp = tops.map(t=>\`<li><strong>\${groups[t]}(\${t})</strong> — \${interpretations[t]}</li>\`).join('');
-    out.innerHTML = \`
-      <div><strong>대표 감각:</strong> \${topLabels}</div>
-      <div class="scores" role="list">\${detail}</div>
-      <div class="desc">
-        <ul>\${interp}</ul>
-        <div class="small">해석: 각 영역 합산(6~30점). 역채점(A6,B6,C6,D6,E6)은 반대로 계산됨.</div>
-      </div>\`;
-    out.style.display = 'block';
+  function show(){
+    const s=calc();const out=document.getElementById("out");
+    const max=Math.max(...Object.values(s));
+    const tops=Object.entries(s).filter(([k,v])=>v===max).map(([k])=>k);
+    out.innerHTML="";
+    tops.forEach(t=>{
+      const d=TEXTS[t];
+      const card=document.createElement("div");card.className="result-card";
+      card.innerHTML=`<img src="${IMGS[t]}"><div><h3>${d.title}</h3>
+      <p><b>특징:</b> ${d.feature.join(" · ")}</p>
+      <p><b>회복 루틴:</b><ul><li>${d.routine.join("</li><li>")}</li></ul></p></div>`;
+      out.appendChild(card);
+    });
+    out.style.display="block";
   }
 
-  function exportCSV(scores){
-    if(!scores){ alert('먼저 결과 보기를 눌러 점수를 계산해 주세요.'); return; }
-    const now = new Date();
-    const ts = now.toISOString();
-    const headers = ['timestamp','A(시각)','B(청각)','C(촉각)','D(후각)','E(미각)','top'];
-    const entries = Object.entries(scores);
-    const max = Math.max(...entries.map(([_,v])=>v));
-    const tops = entries.filter(([_,v])=>v===max).map(([k])=>k).join('+');
-    const row = [ts, scores.A, scores.B, scores.C, scores.D, scores.E, tops];
-    const csv = headers.join(',')+'\\n'+row.join(',')+'\\n';
-    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'youandra_ogam_scores.csv';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
+  document.getElementById("nextBtn").onclick=()=>{if(idx<ITEMS.length-1){idx++;render();}else{show();}};
+  document.getElementById("prevBtn").onclick=()=>{if(idx>0){idx--;render();}};
+  document.getElementById("restart").onclick=()=>{newRun();document.getElementById("out").style.display="none";};
+  document.getElementById("exportBtn").onclick=()=>{
+    const s=calc();const row=[new Date().toISOString(),s.A,s.B,s.C,s.D,s.E].join(",");
+    const csv="time,A,B,C,D,E\n"+row+"\n";
+    const blob=new Blob([csv],{type:"text/csv"});const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);a.download="scores.csv";a.click();
+  };
 
-  let lastScores = null;
-  document.getElementById('calcBtn').addEventListener('click', ()=>{
-    const s = calc(); if(s){ lastScores = s; show(s); }
-  });
-  document.getElementById('exportBtn').addEventListener('click', ()=>exportCSV(lastScores));
+  newRun();
 })();
 </script>
 </body>
